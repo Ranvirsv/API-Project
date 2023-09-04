@@ -1,15 +1,20 @@
-import fastify from "fastify";
+import express from "express";
+import cors from "cors";
+import cookies from "cookie-parser";
+import serverless from "serverless-http";
+import { getData } from "./src/routes/mainRoute.ts";
 
-const server = fastify();
-
-server.get("/ping", async (_request, _reply) => {
-  return "pong\n";
+const app = express();
+app.use(cookies());
+app.use(getData);
+app.use(
+  cors({
+    origin: true,
+    credentials: true,
+  })
+);
+app.listen(8000, () => {
+  console.log("Listening on 8000");
 });
 
-server.listen({ port: 8080 }, (err, address) => {
-  if (err) {
-    console.error(err);
-    process.exit(1);
-  }
-  console.log(`Server listening at ${address}`);
-});
+export const handler = serverless(app);
